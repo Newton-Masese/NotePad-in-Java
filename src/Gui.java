@@ -1,5 +1,8 @@
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +14,8 @@ public class Gui extends JFrame {
 
     private JTextArea textArea;
     private File currentFile;
+
+    private UndoManager undoManager;
     public Gui(){
         super("NotePad");
         setSize(400,500);
@@ -22,6 +27,7 @@ public class Gui extends JFrame {
         fileChooser.setCurrentDirectory(new File("src/assets"));
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
 
+        undoManager = new UndoManager();
         addGuiComponents();
     }
 
@@ -30,6 +36,13 @@ public class Gui extends JFrame {
 
         // text area
         textArea = new JTextArea();
+        textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent e) {
+                // adds each edit done in the text area
+                undoManager.addEdit(e.getEdit());
+            }
+        });
         add(textArea, BorderLayout.CENTER);
     }
 
@@ -43,6 +56,7 @@ public class Gui extends JFrame {
 
         // add menus
         menuBar.add(addFileMenu());
+        menuBar.add(addEditMenu());
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -180,5 +194,32 @@ public class Gui extends JFrame {
         fileMenu.add(exitMenuItem);
 
         return fileMenu;
+    }
+    private JMenu addEditMenu(){
+        JMenu editMenu = new JMenu("Edit");
+
+        JMenuItem undoMenuItem = new JMenuItem("Undo");
+        undoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(undoManager.canUndo()){
+                    undoManager.undo();
+                }
+            }
+        });
+        editMenu.add(undoMenuItem);
+
+        JMenuItem redoMenuItem = new JMenuItem("Redo");
+        redoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(undoManager.canRedo()){
+                    undoManager.redo();
+                }
+            }
+        });
+        editMenu.add(redoMenuItem);
+
+        return editMenu;
     }
 }
