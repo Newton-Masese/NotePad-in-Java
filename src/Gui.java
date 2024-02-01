@@ -60,6 +60,7 @@ public class Gui extends JFrame {
         menuBar.add(addFileMenu());
         menuBar.add(addEditMenu());
         menuBar.add(addFormatMenu());
+        menuBar.add(addViewMenu());
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -280,5 +281,59 @@ public class Gui extends JFrame {
         });
         formatMenu.add(fontMenuItem);
         return formatMenu;
+    }
+    //zoom in and out
+    private JMenu addViewMenu(){
+        JMenu viewMenu = new JMenu("View");
+
+        JMenu zoomMenu = new JMenu("Zoom");
+
+        JMenuItem zoomInMenuItem = new JMenuItem("Zoom in");
+        zoomInMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFont = textArea.getFont();
+                textArea.setFont(new Font(
+                        currentFont.getName(),
+                        currentFont.getStyle(),
+                        currentFont.getSize() + 1
+                ));
+            }
+        });
+        zoomMenu.add(zoomInMenuItem);
+
+        // zoom out functionality
+        JMenuItem zoomOutMenuItem = new JMenuItem("Zoom out");
+        zoomOutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFont = textArea.getFont();
+                textArea.setFont(new Font(
+                        currentFont.getName(),
+                        currentFont.getStyle(),
+                        currentFont.getSize() - 1
+                ));
+            }
+        });
+        zoomMenu.add(zoomOutMenuItem);
+
+        // restore default zoom
+        JMenuItem zoomRestoreMenuItem = new JMenuItem("Restore Default Zoom");
+        zoomRestoreMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFont = textArea.getFont();
+                textArea.setFont(new Font(
+                        currentFont.getName(),
+                        currentFont.getStyle(),
+                        12
+                ));
+            }
+        });
+        zoomMenu.add(zoomRestoreMenuItem);
+
+        viewMenu.add(zoomMenu);
+
+        return viewMenu;
     }
 }
