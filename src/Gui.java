@@ -12,10 +12,10 @@ public class Gui extends JFrame {
 
     private final JFileChooser fileChooser;
 
-    private JTextArea textArea;
+    protected JTextArea textArea;
     private File currentFile;
 
-    private UndoManager undoManager;
+    private final UndoManager undoManager;
     public Gui(){
         super("NotePad");
         setSize(400,500);
@@ -43,7 +43,9 @@ public class Gui extends JFrame {
                 undoManager.addEdit(e.getEdit());
             }
         });
-        add(textArea, BorderLayout.CENTER);
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private void addToolBar(){
@@ -57,6 +59,7 @@ public class Gui extends JFrame {
         // add menus
         menuBar.add(addFileMenu());
         menuBar.add(addEditMenu());
+        menuBar.add(addFormatMenu());
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -221,5 +224,61 @@ public class Gui extends JFrame {
         editMenu.add(redoMenuItem);
 
         return editMenu;
+    }
+    private JMenu addFormatMenu(){
+        JMenu formatMenu = new JMenu("Format");
+
+        // wrap words
+        JCheckBoxMenuItem wordWrapMenuItem = new JCheckBoxMenuItem("Word Wrap");
+        wordWrapMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isChecked = wordWrapMenuItem.getState();
+                if(isChecked){
+                    textArea.setLineWrap(true);
+                    textArea.setWrapStyleWord(true);
+                }else{
+                    textArea.setLineWrap(false);
+                    textArea.setWrapStyleWord(false);
+                }
+            }
+        });
+        formatMenu.add(wordWrapMenuItem);
+
+        //align text
+        JMenu alignMenuItem = new JMenu("Align");
+
+        JMenuItem alignLeft = new JMenuItem("Left");
+        alignLeft.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+            }
+        });
+        alignMenuItem.add(alignLeft);
+
+        JMenuItem alignRight = new JMenuItem("Right");
+        alignRight.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textArea.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+            }
+        });
+        alignMenuItem.add(alignRight);
+
+
+        formatMenu.add(alignMenuItem);
+
+        // fonts
+        JMenuItem fontMenuItem = new JMenuItem("Font");
+        fontMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //launch font menu
+                new FontMenu(Gui.this).setVisible(true);
+            }
+        });
+        formatMenu.add(fontMenuItem);
+        return formatMenu;
     }
 }
